@@ -1,0 +1,15 @@
+#include "stdafx.h"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include <iostream>
+using namespace cv;
+using namespace std;
+
+Mat g_srcImage, g_dstImage;
+int main()
+{
+	Mat g_srcImage = imread("F:/研二下/小论文撰写/图像预处理代码/prepare-image-process-xingtaixue/形态学效果.jpg");
+	threshold(g_srcImage, g_dstImage, 190, 255, 3);
+	imwrite("阈值处理.jpg", g_dstImage);
+    return 0;
+}
