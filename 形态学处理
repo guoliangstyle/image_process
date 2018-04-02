@@ -1,0 +1,14 @@
+#include "stdafx.h"
+
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+using namespace cv;
+
+int main()
+{
+	Mat src = imread("F:/研二下/小论文撰写/图像预处理代码/prepare-image-process/双边效果.jpg");
+	Mat element = getStructuringElement(MORPH_RECT, Size(10, 10));
+	morphologyEx(src, src, MORPH_OPEN, element);
+	imwrite("形态学效果.jpg", src);
+    return 0;
+}
