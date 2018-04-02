@@ -1,0 +1,46 @@
+#include "stdafx.h"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <iostream>
+using namespace std;
+using namespace cv;
+
+int main()
+{
+	//载入原图
+	Mat image = imread("C:/data/picture/good/2.jpg");
+	//全局变量声明
+	Mat g_junzhi, g_gaosi, g_zhongzhi, g_shuangbian;
+    //=========================================声明窗口==============================
+	//创建窗口
+	//namedWindow("滤波【原图】");
+	//namedWindow("均值滤波【效果图】");
+	//namedWindow("高斯滤波【效果图】");
+	//namedWindow("中值滤波【效果图】");
+	//namedWindow("双边滤波【效果图】");
+	//===========================================滤波操作============================
+	//blur(image, g_junzhi, Size(7, 7));                        //进行均值滤波
+	//GaussianBlur(image, g_gaosi, Size(5, 5), 0, 0);           //进行高斯滤波
+	//medianBlur(image, g_zhongzhi, 7);                         //进行中值滤波
+	bilateralFilter(image, g_shuangbian, 5, 20, 15);  //进行双边滤波操作
+	//===========================================显示处理效果============================
+	//显示效果图
+	//imshow("滤波【原图】", image);
+	//imshow("双边滤波【效果图】", g_junzhi);
+	//imshow("双边滤波【效果图】", g_gaosi);
+	//imshow("双边滤波【效果图】", g_zhongzhi);
+	//imshow("双边滤波【效果图】", g_shuangbian);
+
+	//===========================================保存图像==============================
+	//保存双边滤波后的图像
+	//imwrite("均值效果.jpg", g_junzhi);
+	//imwrite("高斯效果.jpg", g_gaosi);
+	//imwrite("中值效果.jpg", g_zhongzhi);
+	imwrite("双边效果.jpg", g_shuangbian);
+	Mat src_gray;
+	cvtColor(g_shuangbian, src_gray, CV_BGR2GRAY);
+	imwrite("灰度图像.jpg", src_gray);
+	waitKey(0);
+    return 0;
+}
