@@ -1,0 +1,6 @@
+function [ hog ] = extract_hog( img )
+%提取梯度方向直方图特征
+% 作者：郭良
+[hog] = extractHOGFeatures(img,'cellSize',[20 20],'BlockSize',[2 2]);
+
+end
