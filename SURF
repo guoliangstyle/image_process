@@ -1,0 +1,10 @@
+function [ features ] = SURF_feature( img )
+%提取SURF特征
+%作者：郭良
+M = rgb2gray(img);
+points = detectSURFFeatures(M,'MetricThreshold',200);
+strongestPoints = selectStrongest(points,3);
+[data,~] = extractFeatures(M,strongestPoints,'Method','SURF');
+normalizedData = mat2gray(data);
+features = reshape(normalizedData,1,[]);
+end
