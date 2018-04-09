@@ -1,0 +1,6 @@
+function [ features ] = extract_lbp( img )
+%提取局部二进制模式特征
+% 作者：郭良
+M = rgb2gray(img);
+features = extractLBPFeatures(M);
+end
