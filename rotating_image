@@ -1,0 +1,30 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+char filein[256];
+char fileout[256];
+Mat src; Mat src_out;
+
+void rotating_image()
+{
+	for (int n = 1; n <= 2; n++) {
+		sprintf_s(filein, "%s\\%d.tiff", "H:\\raw_data\\good_feature_process", n);
+		src = imread(filein);
+		int imgcols = src.cols;
+		int imgrows = src.rows;
+		if (imgcols > imgrows)
+			transpose(src, src_out);
+		sprintf_s(fileout, "%s\\%d.tiff", "H:\\raw_data\\good_feature_resize", n);
+		imwrite(fileout, src_out);
+	}
+
+}
+
+int main()
+{
+	rotating_image();
+    return 0;
+}
