@@ -1,0 +1,90 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+using namespace std;
+using namespace cv;
+
+Mat src; Mat src_gray;
+Mat g_shuangbian;
+int thresh = 200;
+RNG rng(12345);
+char filein[256];
+char fileout[256];
+
+void thresh_callback()
+{
+	for (int n = 1; n <= 120; n++) {
+		sprintf_s(filein, "%s\\%d.tiff", "H:\\raw_data\\oil_defect", n);
+		src = imread(filein);
+		bilateralFilter(src, g_shuangbian, 5, 20, 15);
+		cvtColor(g_shuangbian, src_gray, CV_BGR2GRAY);
+		Mat threshold_output;
+		vector<vector<Point>>contours;
+		vector<Vec4i>hierarchy;
+		//阈值化检测边界
+		threshold(src_gray, threshold_output, thresh, 255, THRESH_BINARY);
+
+		//寻找轮廓
+		findContours(threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+		//对每个找到的轮廓创建可倾斜的矩形框
+		vector<RotatedRect>minRect(contours.size());
+		for (int i = 0; i < contours.size(); i++)
+		{
+			minRect[i] = minAreaRect(Mat(contours[i]));  //minRect[i]存放包围被测物体最小面积的矩形框
+		}
+		//找出最大的矩形框
+
+		Mat drawing = Mat::zeros(threshold_output.size(), CV_8UC3);     //创建一个Mat类型的drawing
+		for (int i = 0; i < contours.size(); i++)
+		{
+			//Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+			Scalar color = Scalar(255, 255, 255);
+
+
+			//drawContours(drawing, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point());  //画边界
+			int temp = 0;
+			Point2f rect_points[4];
+			minRect[i].points(rect_points);
+			//for (int j = 0; j < 4; j++)
+			// line(src, rect_points[j], rect_points[(j + 1) % 4], color, 1, 8); //画矩形框
+			if (contourArea(contours[i]) > 5000 && contourArea(contours[i]) < 500000)
+			{
+				for (int j = 0; j < 4; j++)
+					line(src, rect_points[j], rect_points[(j + 1) % 4], color, 1, 8); //画矩形框
+				temp = i;
+				cout << temp << endl;
+				Mat cropped, M, rotated;
+				float angle = minRect[temp].angle;
+				Size rect_size = minRect[temp].size;
+				if (minRect[temp].angle < -45.) {
+					//angle += 90.0;
+					swap(rect_size.width, rect_size.height);
+				}
+				M = getRotationMatrix2D(minRect[temp].center, angle, 1.0);
+				warpAffine(g_shuangbian, rotated, M, src.size(), INTER_CUBIC);
+
+				getRectSubPix(rotated, minRect[temp].size, minRect[temp].center, cropped);
+
+				int imgcols = cropped.cols;
+				int imgrows = cropped.rows;
+				if (imgcols > imgrows)
+					transpose(cropped, cropped);
+				Mat res;
+				resize(cropped, res, Size(60, 80));
+				sprintf_s(fileout, "%s\\%d.tiff", "H:\\raw_data\\oil_defect_resize", n);
+				imwrite(fileout, res);
+			}
+		}
+
+
+		//画一个比最小面积包围的矩形大一点的矩形
+
+		imwrite("minarea.jpg", src);
+	}
+}
+
+int main()
+{
+	thresh_callback();
+    return 0;
+}
