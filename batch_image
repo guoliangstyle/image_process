@@ -1,0 +1,25 @@
+#include "stdafx.h"
+#include<opencv2/opencv.hpp>
+#include<iostream>
+using namespace std;
+using namespace cv;
+
+void Resize(int m, int n) {
+	char filename[256];
+	char filename1[256];
+	for (int i = 1; i <= 5; i++) {
+		sprintf_s(filename, "%s\\%d.tiff", "H:\\raw_data\\good_picture", i);
+		Mat img = imread(filename);
+		Mat res;
+		resize(img, res, Size(m, n));
+		sprintf_s(filename1, "%s\\%d_resize.tiff", "H:\\raw_data\\good_feature_process", i);
+		imwrite(filename1, res);
+	}
+
+}
+
+int main()
+{
+	Resize(600, 600);
+    return 0;
+}
